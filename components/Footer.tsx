@@ -40,7 +40,7 @@ const defaultSections: FooterSection[] = [
     links: [
       { label: "Nosotros", href: "#about" },
       { label: "Blog", href: "#blog" },
-      { label: "Contacto", href: "#contact" },
+      { label: "Contacto", href: "mailto:hola@eventplannermaster.com" },
     ],
   },
   {
@@ -66,7 +66,7 @@ export const Footer = ({
   socialLinks = {
     twitter: "https://twitter.com",
     linkedin: "https://linkedin.com",
-    email: "hola@eventplanner.com",
+    email: "hola@eventplannermaster.com",
   },
   copyrightText,
 }: FooterProps) => {
@@ -98,6 +98,14 @@ export const Footer = ({
               <p className="text-xs leading-4 text-[#999999] mt-2" style={{ fontFamily: "Figtree" }}>
                 No spam. Solo novedades.
               </p>
+              <a
+                href="mailto:hola@eventplannermaster.com"
+                className="inline-flex items-center gap-1.5 text-sm text-[#666666] hover:text-[#156d95] transition-colors duration-150 mt-3"
+                style={{ fontFamily: "Figtree" }}
+              >
+                <Mail className="w-3.5 h-3.5" />
+                hola@eventplannermaster.com
+              </a>
             </div>
 
             {/* Social Links */}
