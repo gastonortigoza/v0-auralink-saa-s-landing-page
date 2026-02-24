@@ -1,9 +1,10 @@
 "use client"
-import { useState } from "react"
-import React from "react"
 
 import { motion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
+import { useUtmVariant } from "@/lib/utm"
+import { useEarlyAccess } from "@/components/EarlyAccessContext"
+
 type ProductTeaserCardProps = {
   dailyVolume?: string
   dailyVolumeLabel?: string
@@ -18,53 +19,23 @@ type ProductTeaserCardProps = {
   secondaryButtonHref?: string
 }
 
-// @component: ProductTeaserCard
 export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
   const {
     dailyVolume = "1,430,992,688",
-    dailyVolumeLabel = "PLATAFORMA DE EVENTOS",
-    headline = "Un solo evento. Todos los proveedores. Cero caos.",
-    subheadline = "Organizá eventos desde la web, por chat con IA o con agentes humanos. Salones, catering, música y pagos en un solo lugar.",
-    description = "Multi-tenant y white-label para empresas grandes o freelancers.",
+    dailyVolumeLabel,
+    headline,
+    subheadline,
+    primaryButtonText,
     videoSrc = "https://cdn.sanity.io/files/1t8iva7t/production/a2cbbed7c998cf93e7ecb6dae75bab42b13139c2.mp4",
     posterSrc = "/images/design-mode/9ad78a5534a46e77bafe116ce1c38172c60dc21a-1069x1068.png",
-    primaryButtonText = "Unirme a la lista",
-    primaryButtonHref = "",
-    secondaryButtonText = "Conocer más",
-    secondaryButtonHref = "",
   } = props
+  const variant = useUtmVariant()
+  const { openModal } = useEarlyAccess()
+  const badge = dailyVolumeLabel ?? variant.badge
+  const title = headline ?? variant.h1
+  const desc = subheadline ?? variant.subtitle
+  const ctaText = primaryButtonText ?? variant.ctaText
 
-  const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setStatus("loading")
-
-    try {
-      const formData = new FormData()
-      formData.append("email", email)
-
-      const response = await fetch("https://formspree.io/f/mpqjazea", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-        },
-      })
-
-      if (response.ok) {
-        setStatus("success")
-        setEmail("")
-      } else {
-        setStatus("error")
-      }
-    } catch {
-      setStatus("error")
-    }
-  }
-
-  // @return
   return (
     <section className="w-full px-8 pt-32 pb-16">
       <div className="max-w-7xl mx-auto">
@@ -82,11 +53,7 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
             }}
             className="col-span-12 lg:col-span-6 bg-[#e9e9e9] rounded-[40px] p-12 lg:p-16 flex flex-col justify-end aspect-square overflow-hidden"
           >
-            <a
-              href={primaryButtonHref}
-              onClick={(e) => e.preventDefault()}
-              className="flex flex-col gap-1 text-[#9a9a9a]"
-            >
+            <div className="flex flex-col gap-1 text-[#9a9a9a]">
               <motion.span
                 initial={{
                   transform: "translateY(20px)",
@@ -106,7 +73,7 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
                   fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
                 }}
               >
-                {dailyVolumeLabel}
+                {badge}
                 <ArrowUpRight className="w-[0.71em] h-[0.71em]" />
               </motion.span>
               <span
@@ -121,7 +88,7 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
               >
                 {dailyVolume}
               </span>
-            </a>
+            </div>
 
             <h1
               className="text-[56px] leading-[60px] tracking-tight text-[#202020] max-w-[520px] mb-6"
@@ -130,7 +97,7 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
                 fontFamily: "var(--font-figtree), Figtree",
               }}
             >
-              {headline}
+              {title}
             </h1>
 
             <p
@@ -139,67 +106,19 @@ export const ProductTeaserCard = (props: ProductTeaserCardProps) => {
                 fontFamily: "var(--font-figtree), Figtree",
               }}
             >
-              {subheadline}
+              {desc}
             </p>
 
-            <div className="max-w-[520px] mb-0">
-              <p
-                className="text-base leading-5"
+            <div className="mt-10 flex flex-col gap-4 max-w-[400px]">
+              <button
+                onClick={openModal}
+                className="cursor-pointer text-white bg-[#156d95] rounded-full px-[18px] py-[15px] text-base leading-4 whitespace-nowrap transition-all duration-150 hover:rounded-2xl"
                 style={{
-                  display: "none",
+                  fontFamily: "var(--font-figtree), Figtree",
                 }}
               >
-                {description}
-              </p>
-            </div>
-
-            <div className="mt-10 flex flex-col gap-4 max-w-[400px]">
-              {status === "success" ? (
-                <p
-                  className="text-[#16b364] text-base"
-                  style={{
-                    fontFamily: "var(--font-figtree), Figtree",
-                  }}
-                >
-                  ¡Gracias! Te vamos a contactar.
-                </p>
-              ) : (
-                <form onSubmit={handleSubmit} className="flex gap-2 flex-wrap">
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Tu email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={status === "loading"}
-                    className="flex-1 min-w-[200px] px-4 py-[15px] rounded-full border border-[#d0d0d0] text-base leading-4 focus:outline-none focus:border-[#156d95] transition-colors disabled:opacity-50"
-                    style={{
-                      fontFamily: "var(--font-figtree), Figtree",
-                    }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={status === "loading"}
-                    className="cursor-pointer text-white bg-[#0988f0] rounded-full px-[18px] py-[15px] text-base leading-4 whitespace-nowrap transition-all duration-150 ease-[cubic-bezier(0.455,0.03,0.515,0.955)] hover:rounded-2xl disabled:opacity-50"
-                    style={{
-                      background: "#156d95",
-                    }}
-                  >
-                    {status === "loading" ? "Enviando…" : primaryButtonText}
-                  </button>
-                </form>
-              )}
-              {status === "error" && (
-                <p
-                  className="text-[#ef4444] text-sm"
-                  style={{
-                    fontFamily: "var(--font-figtree), Figtree",
-                  }}
-                >
-                  Hubo un error. Probá de nuevo.
-                </p>
-              )}
+                {ctaText}
+              </button>
               <span
                 className="text-[#999999] text-xs"
                 style={{
